@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm giao dịch</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Thêm mới giao dịch</h2>
+    <form th:action="@{/transactions}" th:object="${transaction}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Mã giao dịch</label>
+            <input type="text" th:field="*{transactionCode}" class="form-control" placeholder="MGD-XXXX" required>
+            <div th:errors="*{transactionCode}" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tên khách hàng</label>
+            <select th:field="*{customer.id}" class="form-control" required>
+                <option value="">Chọn khách hàng</option>
+                <option th:each="customer : ${customers}" th:value="${customer.id}" th:text="${customer.name}"></option>
+            </select>
+            <div th:errors="*{customer}" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Loại dịch vụ</label>
+            <select th:field="*{serviceType}" class="form-control" required>
+                <option value="">Chọn loại dịch vụ</option>
+                <option value="Đất">Đất</option>
+                <option value="Nhà và đất">Nhà và đất</option>
+            </select>
+            <div th:errors="*{serviceType}" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ngày giao dịch</label>
+            <input type="date" th:field="*{transactionDate}" class="form-control" required>
+            <div th:errors="*{transactionDate}" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Đơn giá (VND/m²)</label>
+            <input type="number" step="0.01" th:field="*{price}" class="form-control" required>
+            <div th:errors="*{price}" class="text-danger"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Diện tích (m²)</label>
+            <input type="number" step="0.01" th:field="*{area}" class="form-control" required>
+            <div th:errors="*{area}" class="text-danger"></div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a th:href="@{/transactions}" class="btn btn-secondary">Hủy</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
