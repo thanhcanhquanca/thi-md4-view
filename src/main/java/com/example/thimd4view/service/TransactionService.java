@@ -3,6 +3,8 @@ package com.example.thimd4view.service;
 import com.example.thimd4view.model.Transaction;
 import com.example.thimd4view.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,5 +41,10 @@ public class TransactionService implements ITransactionService {
                 .filter(t -> t.getCustomer().getName().toLowerCase().contains(keyword.toLowerCase()) ||
                         t.getServiceType().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Transaction> searchByCustomerNameAndServiceType(String customerName, String serviceType, Pageable pageable) {
+        return transactionRepository.searchByCustomerNameAndServiceType(customerName, serviceType, pageable);
     }
 }

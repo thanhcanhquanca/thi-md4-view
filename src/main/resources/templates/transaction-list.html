@@ -15,6 +15,10 @@
             background-color: #007bff;
             border-color: #007bff;
         }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -24,11 +28,17 @@
     <!-- Ô tìm kiếm và nút Thêm mới -->
     <div class="row mb-3">
         <div class="col-md-6">
-            <form th:action="@{/transactions}" method="get" class="d-flex">
-                <input type="text" name="keyword" th:value="${keyword}" class="form-control me-2" placeholder="Tìm kiếm...">
+            <form th:action="@{/transactions}" method="get" class="d-flex flex-wrap gap-2">
+                <input type="text" name="customerName" th:value="${customerName}" class="form-control" placeholder="Tìm theo tên khách hàng...">
+                <select name="serviceType" class="form-select">
+                    <option value="" th:selected="${serviceType == null or serviceType == ''}">Tất cả loại dịch vụ</option>
+                    <option value="Đất" th:selected="${serviceType == 'Đất'}">Đất</option>
+                    <option value="Nhà và đất" th:selected="${serviceType == 'Nhà và đất'}">Nhà và đất</option>
+                </select>
                 <input type="hidden" name="page" value="0">
                 <input type="hidden" name="size" th:value="${pageSize}">
                 <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                <a th:href="@{/transactions}" class="btn btn-secondary">Reset</a>
             </form>
         </div>
         <div class="col-md-6 text-end">
@@ -71,13 +81,13 @@
     <nav th:if="${totalPages > 1}">
         <ul class="pagination">
             <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/transactions(page=${currentPage - 1}, size=${pageSize}, keyword=${keyword})}">Trước</a>
+                <a class="page-link" th:href="@{/transactions(page=${currentPage - 1}, size=${pageSize}, customerName=${customerName}, serviceType=${serviceType})}">Trước</a>
             </li>
             <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:classappend="${i == currentPage ? 'active' : ''}">
-                <a class="page-link" th:href="@{/transactions(page=${i}, size=${pageSize}, keyword=${keyword})}" th:text="${i + 1}"></a>
+                <a class="page-link" th:href="@{/transactions(page=${i}, size=${pageSize}, customerName=${customerName}, serviceType=${serviceType})}" th:text="${i + 1}"></a>
             </li>
             <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/transactions(page=${currentPage + 1}, size=${pageSize}, keyword=${keyword})}">Sau</a>
+                <a class="page-link" th:href="@{/transactions(page=${currentPage + 1}, size=${pageSize}, customerName=${customerName}, serviceType=${serviceType})}">Sau</a>
             </li>
         </ul>
     </nav>

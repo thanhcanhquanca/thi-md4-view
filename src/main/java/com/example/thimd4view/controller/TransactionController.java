@@ -6,6 +6,9 @@ import com.example.thimd4view.service.CustomerService;
 import com.example.thimd4view.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,25 +26,31 @@ public class TransactionController {
     @Autowired
     private CustomerService customerService;
 
-    // Yêu cầu 1: Hiển thị danh sách giao dịch (không phân trang) và hỗ trợ tìm kiếm
     @GetMapping
     public String getTransactionList(
-            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "") String customerName,
+            @RequestParam(defaultValue = "") String serviceType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             Model model) {
-        List<Transaction> transactions;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Transaction> transactionPage;
 
-        if (keyword.isEmpty()) {
-            transactions = transactionService.findAll();
+        if (customerName.isEmpty() && serviceType.isEmpty()) {
+            transactionPage = transactionService.searchByCustomerNameAndServiceType(null, null, pageable);
         } else {
-            transactions = transactionService.searchByCustomerNameOrServiceType(keyword);
+            transactionPage = transactionService.searchByCustomerNameAndServiceType(customerName, serviceType, pageable);
         }
 
-        model.addAttribute("transactions", transactions);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("transactions", transactionPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", transactionPage.getTotalPages());
+        model.addAttribute("customerName", customerName);
+        model.addAttribute("serviceType", serviceType);
         return "transaction-list";
     }
 
-    // Yêu cầu 2: Hiển thị form thêm mới giao dịch
+
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         List<Customer> customers = customerService.findAll();
@@ -50,7 +59,7 @@ public class TransactionController {
         return "transaction-form";
     }
 
-    // Yêu cầu 2: Xử lý thêm mới giao dịch
+
     @PostMapping
     public String createTransaction(@Valid @ModelAttribute Transaction transaction, BindingResult result, Model model) {
         if (result.hasErrors()) {
